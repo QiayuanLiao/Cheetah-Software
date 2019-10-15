@@ -14,7 +14,7 @@
  * @param reason Error message string
  * @param printErrno If true, also print C errno
  */
-void HardwareBridge::initError(const char* reason, bool printErrno) {
+void HardwareBridge::initError(const char *reason, bool printErrno) {
   printf("FAILED TO INITIALIZE HARDWARE: %s\n", reason);
 
   if (printErrno) {
@@ -60,7 +60,7 @@ void HardwareBridge::handleInterfaceLCM() {
 void HardwareBridge::prefaultStack() {
   printf("[Init] Prefault stack...\n");
   volatile char stack[MAX_STACK_SIZE];
-  memset(const_cast<char*>(stack), 0, MAX_STACK_SIZE);
+  memset(const_cast<char *>(stack), 0, MAX_STACK_SIZE);
   if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
     initError(
         "mlockall failed.  This is likely because you didn't run robot as "
@@ -81,17 +81,17 @@ void HardwareBridge::setupScheduler() {
   }
 }
 
-void HardwareBridge::handleGamepadLCM(const lcm::ReceiveBuffer* rbuf,
-                                      const std::string& chan,
-                                      const gamepad_lcmt* msg) {
+void HardwareBridge::handleGamepadLCM(const lcm::ReceiveBuffer *rbuf,
+                                      const std::string &chan,
+                                      const gamepad_lcmt *msg) {
   (void)rbuf;
   (void)chan;
   _gamepadCommand.set(msg);
 }
 
 void HardwareBridge::handleControlParameter(
-    const lcm::ReceiveBuffer* rbuf, const std::string& chan,
-    const control_parameter_request_lcmt* msg) {
+    const lcm::ReceiveBuffer *rbuf, const std::string &chan,
+    const control_parameter_request_lcmt *msg) {
   (void)rbuf;
   (void)chan;
   if (msg->requestNumber <= _parameter_response_lcmt.requestNumber) {
@@ -111,12 +111,13 @@ void HardwareBridge::handleControlParameter(
 
   switch (msg->requestKind) {
     case (s8)ControlParameterRequestKind::SET_USER_PARAM_BY_NAME: {
-      if(!_userControlParameters) {
+      if (!_userControlParameters) {
         printf("[Warning] Got user param %s, but not using user parameters!\n",
-               (char*)msg->name);
+               (char *)msg->name);
       } else {
-        std::string name((char*)msg->name);
-        ControlParameter& param = _userControlParameters->collection.lookup(name);
+        std::string name((char *)msg->name);
+        ControlParameter &param =
+            _userControlParameters->collection.lookup(name);
 
         // type check
         if ((s8)param._kind != msg->parameterKind) {
@@ -139,9 +140,9 @@ void HardwareBridge::handleControlParameter(
         _parameter_response_lcmt.parameterKind =
             msg->parameterKind;  // just for debugging print statements
         memcpy(_parameter_response_lcmt.value, msg->value, 64);
-        //_parameter_response_lcmt.value = _parameter_request_lcmt.value; // just
-        //for debugging print statements
-        strcpy((char*)_parameter_response_lcmt.name,
+        //_parameter_response_lcmt.value = _parameter_request_lcmt.value; //
+        // just for debugging print statements
+        strcpy((char *)_parameter_response_lcmt.name,
                name.c_str());  // just for debugging print statements
         _parameter_response_lcmt.requestKind = msg->requestKind;
 
@@ -153,8 +154,8 @@ void HardwareBridge::handleControlParameter(
     } break;
 
     case (s8)ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME: {
-      std::string name((char*)msg->name);
-      ControlParameter& param = _robotParams.collection.lookup(name);
+      std::string name((char *)msg->name);
+      ControlParameter &param = _robotParams.collection.lookup(name);
 
       // type check
       if ((s8)param._kind != msg->parameterKind) {
@@ -178,8 +179,8 @@ void HardwareBridge::handleControlParameter(
           msg->parameterKind;  // just for debugging print statements
       memcpy(_parameter_response_lcmt.value, msg->value, 64);
       //_parameter_response_lcmt.value = _parameter_request_lcmt.value; // just
-      //for debugging print statements
-      strcpy((char*)_parameter_response_lcmt.name,
+      // for debugging print statements
+      strcpy((char *)_parameter_response_lcmt.name,
              name.c_str());  // just for debugging print statements
       _parameter_response_lcmt.requestKind = msg->requestKind;
 
@@ -187,18 +188,15 @@ void HardwareBridge::handleControlParameter(
              controlParameterValueToString(
                  v, (ControlParameterValueKind)msg->parameterKind)
                  .c_str());
-
     } break;
 
-    default: {
-      throw std::runtime_error("parameter type unsupported");
-    }
-    break;
+    default: { throw std::runtime_error("parameter type unsupported"); } break;
   }
   _interfaceLCM.publish("interface_response", &_parameter_response_lcmt);
 }
 
-MiniCheetahHardwareBridge::MiniCheetahHardwareBridge(RobotController* robot_ctrl)
+MiniCheetahHardwareBridge::MiniCheetahHardwareBridge(
+    RobotController *robot_ctrl)
     : HardwareBridge(robot_ctrl), _spiLcm(getLcmUrl(255)) {}
 
 void MiniCheetahHardwareBridge::run() {
@@ -221,7 +219,7 @@ void MiniCheetahHardwareBridge::run() {
     usleep(1000000);
   }
 
-  if(_userControlParameters) {
+  if (_userControlParameters) {
     while (!_userControlParameters->isFullyInitialized()) {
       printf("[Hardware Bridge] Waiting for user parameters...\n");
       usleep(1000000);
@@ -276,7 +274,7 @@ void MiniCheetahHardwareBridge::initHardware() {
   printf("[MiniCheetahHardware] Init vectornav\n");
   _vectorNavData.quat << 1, 0, 0, 0;
   if (!init_vectornav(&_vectorNavData)) {
-    initError("failed to initialize vectornav!\n", false);
+    // initError("failed to initialize vectornav!\n", false);
   }
 
   init_spi();
@@ -291,8 +289,8 @@ void MiniCheetahHardwareBridge::initHardware() {
 }
 
 void MiniCheetahHardwareBridge::runSpi() {
-  spi_command_t* cmd = get_spi_command();
-  spi_data_t* data = get_spi_data();
+  spi_command_t *cmd = get_spi_command();
+  spi_data_t *data = get_spi_data();
 
   memcpy(cmd, &_spiCommand, sizeof(spi_command_t));
   spi_driver_run();

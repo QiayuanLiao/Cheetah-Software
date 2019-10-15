@@ -5,7 +5,7 @@ cd ${DIR}/../mc-build/
 rm -rf robot-software
 mkdir robot-software
 mkdir robot-software/build
-cp common/test-common robot-software/build
+#cp common/test-common robot-software/build
 cp $1 robot-software/build
 find . -name \*.so* -exec cp {} ./robot-software/build \;
 cp ../scripts/run_mc.sh ./robot-software/build
@@ -16,5 +16,5 @@ cp -r ../config robot-software
 
 DATE=$(date +"%Y%m%d%H%M")
 #scp -r robot-software user@10.0.0.34:~/robot-software-$DATE/
-scp -r robot-software user@10.0.0.34:~/
+scp -r robot-software qiayuanliao@192.168.31.23:~/
 

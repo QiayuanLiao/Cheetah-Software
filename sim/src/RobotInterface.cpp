@@ -6,7 +6,8 @@
 #include "ControlParameters/SimulatorParameters.h"
 
 RobotInterface::RobotInterface(RobotType robotType, Graphics3D *gfx,
-                               PeriodicTaskManager *tm, ControlParameters& userParameters)
+                               PeriodicTaskManager *tm,
+                               ControlParameters &userParameters)
     : PeriodicTask(tm, ROBOT_INTERFACE_UPDATE_PERIOD, "robot-interface"),
       _lcm(getLcmUrl(255)),
       _userParameters(userParameters) {
@@ -33,8 +34,9 @@ RobotInterface::RobotInterface(RobotType robotType, Graphics3D *gfx,
   printf("[RobotInterface] Init graphics\n");
   Vec4<float> robotColor;
   robotColor << 0.2, 0.2, 0.6, 0.6;
-  _robotID = _robotType == RobotType::MINI_CHEETAH ? gfx->setupMiniCheetah(robotColor, true)
-                                                   : gfx->setupCheetah3(robotColor, true);
+  _robotID = _robotType == RobotType::MINI_CHEETAH
+                 ? gfx->setupMiniCheetah(robotColor, true)
+                 : gfx->setupCheetah3(robotColor, true);
   printf("draw list has %lu items\n", _gfx->_drawList._kinematicXform.size());
   _gfx->_drawList._visualizationData = &_visualizationData;
   Checkerboard checker(10, 10, 10, 10);
@@ -95,7 +97,8 @@ using namespace std::chrono_literals;
 
 void RobotInterface::sendControlParameter(const std::string &name,
                                           ControlParameterValue value,
-                                          ControlParameterValueKind kind, bool isUser) {
+                                          ControlParameterValueKind kind,
+                                          bool isUser) {
   if (_pendingControlParameterSend) {
     printf(
         "[ERROR] trying to send control parameter while a send is in progress, "
@@ -108,8 +111,9 @@ void RobotInterface::sendControlParameter(const std::string &name,
     _parameter_request_lcmt.requestNumber++;
 
     // message data
-    _parameter_request_lcmt.requestKind = isUser ?
-        (s8)ControlParameterRequestKind::SET_USER_PARAM_BY_NAME : (s8)ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME;
+    _parameter_request_lcmt.requestKind =
+        isUser ? (s8)ControlParameterRequestKind::SET_USER_PARAM_BY_NAME
+               : (s8)ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME;
     strcpy((char *)_parameter_request_lcmt.name, name.c_str());
     memcpy(_parameter_request_lcmt.value, &value, sizeof(value));
     _parameter_request_lcmt.parameterKind = (s8)kind;
@@ -124,7 +128,7 @@ void RobotInterface::sendControlParameter(const std::string &name,
     _lcmResponseBad = true;
     std::unique_lock<std::mutex> lock(_lcmMutex);
 
-    if (_lcmCV.wait_for(lock, 100ms) == std::cv_status::no_timeout) {
+    if (_lcmCV.wait_for(lock, 200ms) == std::cv_status::no_timeout) {
       _waitingForLcmResponse = false;
       // check it
       if (_waitingForLcmResponse || _lcmResponseBad) {
@@ -187,7 +191,6 @@ void RobotInterface::startInterface() {
     sendControlParameter(kv.first, kv.second->get(kv.second->_kind),
                          kv.second->_kind, true);
   }
-  
 }
 
 void RobotInterface::stopInterface() {
