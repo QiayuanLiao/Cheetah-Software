@@ -4,21 +4,19 @@
 #include "Dynamics/Cheetah3.h"
 #include "Dynamics/MiniCheetah.h"
 
-#include <Utilities/Utilities_print.h>
-#include <ParamHandler.hpp>
 #include <Utilities/Timer.h>
+#include <Utilities/Utilities_print.h>
 #include <unistd.h>
+#include <ParamHandler.hpp>
 
 #include <Controllers/PositionVelocityEstimator.h>
 #include "rt/rt_interface_lcm.h"
 
-RobotRunner::RobotRunner(RobotController* robot_ctrl, 
-                         PeriodicTaskManager* manager, 
-                         float period, std::string name):
-                         PeriodicTask(manager, period, name),
-                         _lcm(getLcmUrl(255)) {
-
-    _robot_ctrl = robot_ctrl;
+RobotRunner::RobotRunner(RobotController* robot_ctrl,
+                         PeriodicTaskManager* manager, float period,
+                         std::string name)
+    : PeriodicTask(manager, period, name), _lcm(getLcmUrl(255)) {
+  _robot_ctrl = robot_ctrl;
 }
 
 /**
@@ -38,12 +36,12 @@ void RobotRunner::init() {
   // Initialize the model and robot data
   _model = _quadruped.buildModel();
   _jpos_initializer = new JPosInitializer<float>(3.);
-  
+
   // Always initialize the leg controller and state entimator
   _legController = new LegController<float>(_quadruped);
   _stateEstimator = new StateEstimatorContainer<float>(
-      cheaterState, vectorNavData, _legController->datas,
-      &_stateEstimate, controlParameters);
+      cheaterState, vectorNavData, _legController->datas, &_stateEstimate,
+      controlParameters);
   initializeStateEstimator(false);
 
   // Controller initializations
@@ -52,7 +50,7 @@ void RobotRunner::init() {
   _robot_ctrl->_legController = _legController;
   _robot_ctrl->_stateEstimator = _stateEstimator;
   _robot_ctrl->_stateEstimate = &_stateEstimate;
-  _robot_ctrl->_visualizationData= visualizationData;
+  _robot_ctrl->_visualizationData = visualizationData;
   _robot_ctrl->_robotType = robotType;
   _robot_ctrl->_driverCommand = driverCommand;
   _robot_ctrl->_controlParameters = controlParameters;
@@ -96,7 +94,7 @@ void RobotRunner::run() {
         _legController->commands[leg].kdJoint = kdMat;
       }
     } else {
-      // Run Control 
+      // Run Control
       _robot_ctrl->runController();
 
       // Update Visualization
@@ -104,13 +102,11 @@ void RobotRunner::run() {
     }
   }
 
-
-
   // Visualization (will make this into a separate function later)
   for (int leg = 0; leg < 4; leg++) {
     for (int joint = 0; joint < 3; joint++) {
       cheetahMainVisualization->q[leg * 3 + joint] =
-        _legController->datas[leg].q[joint];
+          _legController->datas[leg].q[joint];
     }
   }
   cheetahMainVisualization->p.setZero();

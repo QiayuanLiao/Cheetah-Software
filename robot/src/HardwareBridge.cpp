@@ -3,10 +3,11 @@
 #include <unistd.h>
 #include <cstring>
 #include <thread>
+#include "rt/rt_hi220.h"
 #include "rt/rt_interface_lcm.h"
 #include "rt/rt_sbus.h"
 #include "rt/rt_spi.h"
-#include "rt/rt_vectornav.h"
+//#include "rt/rt_vectornav.h"
 
 /*!
  * If an error occurs during initialization, before motors are enabled, print
@@ -249,11 +250,20 @@ void MiniCheetahHardwareBridge::run() {
       &MiniCheetahHardwareBridge::publishVisualizationLCM, this);
   visualizationLCMTask.start();
 
+  // IMU
+  _port = init_hi220(&_vectorNavData);
+  if (_port == -1) {
+    initError("failed to initialize hi220!\n", false);
+  }
+  PeriodicMemberFunction<HardwareBridge> hi220Task(
+      &taskManager, .005, "imu", &HardwareBridge::run_hi220, this);
+  hi220Task.start();
+
   // rc controller
-  _port = init_sbus(false);  // Not Simulation
-  PeriodicMemberFunction<HardwareBridge> sbusTask(
-      &taskManager, .005, "rc_controller", &HardwareBridge::run_sbus, this);
-  sbusTask.start();
+  // _port = init_sbus(false);  // Not Simulation
+  // PeriodicMemberFunction<HardwareBridge> sbusTask(
+  //     &taskManager, .005, "rc_controller", &HardwareBridge::run_sbus, this);
+  // sbusTask.start();
 
   for (;;) {
     usleep(1000000);
@@ -270,17 +280,24 @@ void HardwareBridge::run_sbus() {
   }
 }
 
-void MiniCheetahHardwareBridge::initHardware() {
-  printf("[MiniCheetahHardware] Init vectornav\n");
-  _vectorNavData.quat << 1, 0, 0, 0;
-  if (!init_vectornav(&_vectorNavData)) {
-    // initError("failed to initialize vectornav!\n", false);
+void HardwareBridge::run_hi220() {
+  if (_port > 0) {
+    receive_hi220(_port);
   }
+}
+void MiniCheetahHardwareBridge::initHardware() {
+  // printf("[MiniCheetahHardware] Init vectornav\n");
+  // _vectorNavData.quat << 1, 0, 0, 0;
+  // if (!init_vectornav(&_vectorNavData)) {
+  //   initError("failed to initialize vectornav!\n", false);
+  // }
 
   init_spi();
 
   // init spi
   // init sbus
+  // init hi220;
+
   // init lidarlite
 
   // init LCM hardware logging thread

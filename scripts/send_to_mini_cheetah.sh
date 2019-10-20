@@ -16,5 +16,5 @@ cp -r ../config robot-software
 
 DATE=$(date +"%Y%m%d%H%M")
 #scp -r robot-software user@10.0.0.34:~/robot-software-$DATE/
-scp -r robot-software qiayuanliao@192.168.31.23:~/
+scp -r robot-software qiayuanliao@192.168.31.172:~/
 

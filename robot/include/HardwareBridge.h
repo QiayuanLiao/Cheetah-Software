@@ -10,7 +10,7 @@
 #define PROJECT_HARDWAREBRIDGE_H
 
 #define MAX_STACK_SIZE 16384  // 16KB  of stack
-#define TASK_PRIORITY 49      // linux priority, this is not the nice value
+#define TASK_PRIORITY 99      // linux priority, this is not the nice value
 
 #include <lcm-cpp.hpp>
 #include <string>
@@ -26,10 +26,10 @@ class HardwareBridge {
       : statusTask(&taskManager, 0.5f),
         _interfaceLCM(getLcmUrl(255)),
         _visualizationLCM(getLcmUrl(255)) {
-          _robotRunner = 
-            new RobotRunner(robot_ctrl, &taskManager, 0.001f, "robot-control");
+    _robotRunner =
+        new RobotRunner(robot_ctrl, &taskManager, 0.001f, "robot-control");
     _userControlParameters = robot_ctrl->getUserControlParameters();
-        }
+  }
   void prefaultStack();
   void setupScheduler();
   void initError(const char* reason, bool printErrno = false);
@@ -45,6 +45,7 @@ class HardwareBridge {
 
   void publishVisualizationLCM();
   void run_sbus();
+  void run_hi220();
 
  protected:
   PeriodicTaskManager taskManager;
@@ -71,7 +72,7 @@ class HardwareBridge {
 
 class MiniCheetahHardwareBridge : public HardwareBridge {
  public:
-  MiniCheetahHardwareBridge(RobotController* );
+  MiniCheetahHardwareBridge(RobotController*);
   void runSpi();
   void initHardware();
   void run();
