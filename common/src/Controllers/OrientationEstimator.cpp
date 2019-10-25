@@ -59,12 +59,20 @@ void VectorNavOrientationEstimator<T>::run() {
   static int i;
    if (i>=100)
     {
-    printf("Eular(P R Y):%0.2f %0.2f %0.2f\r\n",
+    printf("Quat(W X Y Z):%0.2f %0.2f %0.2f %0.2f\r\n",
+           this->_stateEstimatorData.result->orientation[0],
+           this->_stateEstimatorData.result->orientation[1],
+           this->_stateEstimatorData.result->orientation[2],  
+           this->_stateEstimatorData.result->orientation[3]);     
+    printf("RQY: %0.2f %0.2f %0.2f\r\n",
            this->_stateEstimatorData.result->rpy[0],
-           this->_stateEstimatorData.result->rpy[1],
-           this->_stateEstimatorData.result->rpy[2]);      
+           this->_stateEstimatorData.result->rpy[1],  
+           this->_stateEstimatorData.result->rpy[2]);     
+
+           i = 0;
            i = 0;
     }
+
     else
     {
         i++;

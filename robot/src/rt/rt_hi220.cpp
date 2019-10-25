@@ -31,7 +31,7 @@ static int16_t acc[3];
 static int16_t gyo[3];
 static int16_t mag[3];
 static float eular[3];
-static float quat[4];
+static float quat[4]={0,0,0,1};
 static uint8_t id;
 
 /*  callback function of  when recv a data frame successfully */
@@ -385,7 +385,7 @@ int init_hi220(VectorNavData *vn_data) {
 
 void receive_hi220(int port) {
   float Eular[3] = {0};
-  float Quat[4] = {0};
+  float Quat[4] = {0,0,0,1};
   float Omega[3] = {0};
   float a[3] = {0};
   uint8_t buf[1024];
@@ -400,10 +400,14 @@ void receive_hi220(int port) {
   get_quat(Quat);
   get_omega(Omega);
 
-  for (int i = 0; i < 4; i++) {
-    vectornav_lcm_data.q[i] = Quat[i];
-    g_vn_data->quat[i] = Quat[i];
-  }
+    vectornav_lcm_data.q[0] = Quat[1];
+    g_vn_data->quat[0] = Quat[1];
+    vectornav_lcm_data.q[1] = Quat[2];
+    g_vn_data->quat[1] = Quat[2];
+    vectornav_lcm_data.q[2] = Quat[3];
+    g_vn_data->quat[2] = Quat[3];
+    vectornav_lcm_data.q[3] = Quat[0];
+    g_vn_data->quat[3] = Quat[0];
   for (int i = 0; i < 3; i++) {
     vectornav_lcm_data.w[i] = Omega[i];
     vectornav_lcm_data.a[i] = a[i];
