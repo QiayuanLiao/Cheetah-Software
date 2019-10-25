@@ -10,7 +10,7 @@
 #define PROJECT_HARDWAREBRIDGE_H
 
 #define MAX_STACK_SIZE 16384  // 16KB  of stack
-#define TASK_PRIORITY 99      // linux priority, this is not the nice value
+#define TASK_PRIORITY 98      // linux priority, this is not the nice value
 
 #include <lcm-cpp.hpp>
 #include <string>

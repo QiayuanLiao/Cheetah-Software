@@ -56,10 +56,20 @@ void VectorNavOrientationEstimator<T>::run() {
   this->_stateEstimatorData.result->aWorld =
       this->_stateEstimatorData.result->rBody.transpose() *
       this->_stateEstimatorData.result->aBody;
-  //   printf("Eular(P R Y):%0.2f %0.2f %0.2f\r\n",
-  //          this->_stateEstimatorData.result->rpy[0],
-  //          this->_stateEstimatorData.result->rpy[1],
-  //          this->_stateEstimatorData.result->rpy[2]);
+  static int i;
+   if (i>=100)
+    {
+    printf("Eular(P R Y):%0.2f %0.2f %0.2f\r\n",
+           this->_stateEstimatorData.result->rpy[0],
+           this->_stateEstimatorData.result->rpy[1],
+           this->_stateEstimatorData.result->rpy[2]);      
+           i = 0;
+    }
+    else
+    {
+        i++;
+    }
+
 }
 
 template class CheaterOrientationEstimator<float>;

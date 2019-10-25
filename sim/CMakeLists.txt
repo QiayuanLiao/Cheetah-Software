@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(sim)
 
 #set(CMAKE_PREFIX_PATH ~/Qt/5.10.0/gcc_64)
-set(CMAKE_PREFIX_PATH ~/Qt/5.12.3/gcc_64)
+set(CMAKE_PREFIX_PATH ~/Qt5.12.5/5.12.5/gcc_64)
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Instruct CMake to run moc automatically when needed
@@ -10,9 +10,9 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
-set(Qt5Core_DIR ~/Qt/5.12.4/gcc_64/lib/cmake/Qt5Core)
-set(Qt5Widgets_DIR ~/Qt/5.12.4/gcc_64/lib/cmake/Qt5Widgets)
-set(Qt5Gamepad_DIR ~/Qt/5.12.4/gcc_64/lib/cmake/Qt5Gamepad)
+set(Qt5Core_DIR ~/Qt5.12.5/5.12.5/gcc_64/lib/cmake/Qt5Core)
+set(Qt5Widgets_DIR ~/Qt5.12.5/5.12.5/gcc_64/lib/cmake/Qt5Widgets)
+set(Qt5Gamepad_DIR ~/Qt5.12.5/5.12.5/gcc_64/lib/cmake/Qt5Gamepad)
 
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)

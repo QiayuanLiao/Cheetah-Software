@@ -309,7 +309,6 @@ void spi_send_receive(spi_command_t *command, spi_data_t *data) {
     // flip bytes the other way
     for (int i = 0; i < 30; i++)
       data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
-    // data_d[i] = __bswap_16(rx_buf[i]);
 
     // copy back to data
     spine_to_spi(data, &g_spine_data, spi_board * 2);

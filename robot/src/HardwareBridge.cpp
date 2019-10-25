@@ -7,7 +7,7 @@
 #include "rt/rt_interface_lcm.h"
 #include "rt/rt_sbus.h"
 #include "rt/rt_spi.h"
-//#include "rt/rt_vectornav.h"
+#include "rt/rt_vectornav.h"
 
 /*!
  * If an error occurs during initialization, before motors are enabled, print
@@ -244,12 +244,6 @@ void MiniCheetahHardwareBridge::run() {
   // robot controller start
   _robotRunner->start();
 
-  // visualization start
-  PeriodicMemberFunction<MiniCheetahHardwareBridge> visualizationLCMTask(
-      &taskManager, .0167, "lcm-vis",
-      &MiniCheetahHardwareBridge::publishVisualizationLCM, this);
-  visualizationLCMTask.start();
-
   // IMU
   _port = init_hi220(&_vectorNavData);
   if (_port == -1) {
@@ -258,6 +252,13 @@ void MiniCheetahHardwareBridge::run() {
   PeriodicMemberFunction<HardwareBridge> hi220Task(
       &taskManager, .005, "imu", &HardwareBridge::run_hi220, this);
   hi220Task.start();
+
+  // visualization start
+  PeriodicMemberFunction<MiniCheetahHardwareBridge> visualizationLCMTask(
+      &taskManager, .0167, "lcm-vis",
+      &MiniCheetahHardwareBridge::publishVisualizationLCM, this);
+  visualizationLCMTask.start();
+
 
   // rc controller
   // _port = init_sbus(false);  // Not Simulation
